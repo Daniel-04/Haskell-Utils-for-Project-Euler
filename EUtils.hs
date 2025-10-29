@@ -28,6 +28,13 @@ windows n xs
 triangle :: Int -> Int
 triangle n = div ((n+1) * n) 2
 
+wordsBy :: (Char -> Bool) -> String -> [String]
+wordsBy p s = case dropWhile p s of
+  "" -> []
+  s' -> w : wordsBy p s''
+    where
+      (w, s'') = break p s'
+
 factors :: Int -> [Int]
 factors n = factors' n 1
   where
