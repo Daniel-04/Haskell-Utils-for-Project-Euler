@@ -1,5 +1,7 @@
 module EUtils where
 import Data.Char (digitToInt)
+import System.Process (readProcess)
+import System.IO.Unsafe (unsafePerformIO)
 
 anyMult :: [Int] -> Int -> Bool
 anyMult divs n = any (\x -> mod n x == 0) divs
@@ -69,3 +71,7 @@ twoSum xs n = twoSum' xs (reverse xs)
 
 digits :: Integer -> [Integer]
 digits n = map (fromIntegral.digitToInt) $ show n
+
+-- trust me bro 8)
+curl :: String -> String
+curl url = unsafePerformIO $ readProcess "curl" ["-f", "-sS", "-L", url] ""
