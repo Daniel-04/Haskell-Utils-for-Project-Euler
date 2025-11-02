@@ -1,23 +1,33 @@
 module EUtils where
+
 import Data.Char (digitToInt)
-import System.Process (readProcess)
 import System.IO.Unsafe (unsafePerformIO)
+import System.Process (readProcess)
 
 anyMult :: [Int] -> Int -> Bool
 anyMult divs n = any (\x -> mod n x == 0) divs
 
 fibs :: [Integer]
-fibs = 1 : 1 : zipWith(+) fibs (tail fibs)
+fibs = 1 : 1 : zipWith (+) fibs (tail fibs)
 
 allDiv :: [Int] -> Int -> Bool
 allDiv divs n = all (\x -> mod n x == 0) divs
 
 primes :: [Int]
-primes = 2 : 3 : sieve (tail primes) [5,7..]
+primes = 2 : 3 : sieve (tail primes) [5, 7 ..]
   where
-    sieve (p:ps) xs = h ++ sieve ps [x | x <- t, x `rem` p /= 0]
+    sieve (p : ps) xs = h ++ sieve ps [x | x <- t, x `rem` p /= 0]
       where
-        (h,~(_:t)) = span (< p*p) xs
+        (h, ~(_ : t)) = span (< p * p) xs
+
+primeFactors :: Int -> [Int]
+primeFactors n = factor n 2
+  where
+    factor 1 _ = []
+    factor n f
+      | mod n f == 0 = f : factor (div n f) f
+      | f * f > n = [n]
+      | otherwise = factor n (f + 1)
 
 windows :: Int -> [a] -> [[a]]
 windows n xs
@@ -26,7 +36,7 @@ windows n xs
   | otherwise = take n xs : windows n (tail xs)
 
 triangle :: Int -> Int
-triangle n = div ((n+1) * n) 2
+triangle n = div ((n + 1) * n) 2
 
 wordsBy :: (Char -> Bool) -> String -> [String]
 wordsBy p s = case dropWhile p s of
@@ -55,29 +65,27 @@ divisors n = 1 : factors' 2
       | otherwise = factors' (x + 1)
 
 factorial :: Integer -> Integer
-factorial n = product [1..n]
+factorial n = product [1 .. n]
 
 nCr :: Integer -> Integer -> Integer
 nCr n k =
-  let
-    n' = factorial n
-    k' = factorial k
-    nsubk' = factorial (n-k)
-  in
-    div n' (k' * nsubk')
+  let n' = factorial n
+      k' = factorial k
+      nsubk' = factorial (n - k)
+   in div n' (k' * nsubk')
 
 twoSum :: [Int] -> Int -> Maybe (Int, Int)
 twoSum xs n = twoSum' xs (reverse xs)
   where
     twoSum' [] _ = Nothing
-    twoSum' (x:xs) ys@(y:ys')
+    twoSum' (x : xs) ys@(y : ys')
       | x + y == n = Just (x, y)
       | x + y < n = twoSum' xs ys
-      | otherwise = twoSum' (x:xs) ys'
+      | otherwise = twoSum' (x : xs) ys'
     twoSum' _ _ = Nothing
 
 digits :: Integer -> [Integer]
-digits n = map (fromIntegral.digitToInt) $ show n
+digits n = map (fromIntegral . digitToInt) $ show n
 
 -- trust me bro 8)
 curl :: String -> String
