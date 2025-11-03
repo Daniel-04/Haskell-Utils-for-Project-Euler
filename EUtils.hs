@@ -1,6 +1,7 @@
 module EUtils where
 
 import Data.Char (digitToInt)
+import Data.List (tails)
 import System.IO.Unsafe (unsafePerformIO)
 import System.Process (readProcess)
 
@@ -30,10 +31,7 @@ primeFactors n = factor n 2
       | otherwise = factor n (f + 1)
 
 windows :: Int -> [a] -> [[a]]
-windows n xs
-  | n <= 0 = []
-  | length xs < n = []
-  | otherwise = take n xs : windows n (tail xs)
+windows n xs = takeWhile ((n ==) . length) $ map (take n) $ tails xs
 
 triangle :: Int -> Int
 triangle n = div ((n + 1) * n) 2
