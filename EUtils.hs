@@ -34,6 +34,34 @@ primeFactors n = factor n 2
 windows :: Int -> [a] -> [[a]]
 windows n xs = takeWhile ((n ==) . length) $ map (take n) $ tails xs
 
+diagonalsTLBR :: [[a]] -> [[a]]
+diagonalsTLBR xss =
+  [ [ xss !! i !! j
+      | (i, row) <- zip [0 ..] xss,
+        let j = k - i,
+        j >= 0,
+        j < length row
+    ]
+    | k <- [0 .. (rows + cols - 2)]
+  ]
+  where
+    rows = length xss
+    cols = if null xss then 0 else length (head xss)
+
+diagonalsTRBL :: [[a]] -> [[a]]
+diagonalsTRBL xss =
+  [ [ xss !! i !! j
+      | (i, row) <- zip [0 ..] xss,
+        let j = i + k,
+        j >= 0,
+        j < length row
+    ]
+    | k <- [-(cols - 1) .. (rows - 1)]
+  ]
+  where
+    rows = length xss
+    cols = if null xss then 0 else length (head xss)
+
 triangle :: (Integral a) => a -> a
 triangle n = div ((n + 1) * n) 2
 
