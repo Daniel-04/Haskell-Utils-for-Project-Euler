@@ -18,7 +18,7 @@ allDiv divs n = all (\x -> mod n x == 0) divs
 primes :: [Int]
 primes = 2 : 3 : sieve (tail primes) [5, 7 ..]
   where
-    sieve (p : ps) xs = h ++ sieve ps [x | x <- t, x `rem` p /= 0]
+    sieve (p : ps) xs = h ++ sieve ps [x | x <- t, rem x p /= 0]
       where
         (h, ~(_ : t)) = span (< p * p) xs
 
@@ -69,10 +69,10 @@ numToWords :: (Integral a) => a -> String
 numToWords n
   | n <= 19 = units !! fromIntegral n
   | n < 100 =
-      let (t, u) = n `divMod` 10
+      let (t, u) = divMod n 10
        in tens !! fromIntegral t ++ if u /= 0 then "-" ++ numToWords u else ""
   | n < 1000 =
-      let (h, r) = n `divMod` 100
+      let (h, r) = divMod n 100
        in numToWords h ++ " hundred" ++ if r /= 0 then " and " ++ numToWords r else ""
   | n == 1000 = "one thousand"
   where
