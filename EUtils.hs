@@ -1,7 +1,7 @@
 module EUtils where
 
 import Data.Char (digitToInt)
-import Data.List (tails)
+import Data.List (foldl', tails)
 import Debug.Trace (traceShow)
 import System.IO.Unsafe (unsafePerformIO)
 import System.Process (readProcess)
@@ -64,6 +64,23 @@ diagonalsTRBL xss =
 
 triangle :: (Integral a) => a -> a
 triangle n = div ((n + 1) * n) 2
+
+numToWords :: (Integral a) => a -> String
+numToWords n
+  | n <= 19 = units !! fromIntegral n
+  | n < 100 =
+      let (t, u) = n `divMod` 10
+       in tens !! fromIntegral t ++ if u /= 0 then "-" ++ numToWords u else ""
+  | n < 1000 =
+      let (h, r) = n `divMod` 100
+       in numToWords h ++ " hundred" ++ if r /= 0 then " and " ++ numToWords r else ""
+  | n == 1000 = "one thousand"
+  where
+    units = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
+    tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+
+countBy :: (Integral b) => (a -> Bool) -> [a] -> b
+countBy p = foldl' (\acc a -> if p a then acc + 1 else acc) 0
 
 wordsBy :: (Char -> Bool) -> String -> [String]
 wordsBy p s = case dropWhile p s of
