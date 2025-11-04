@@ -2,16 +2,17 @@ module EUtils where
 
 import Data.Char (digitToInt)
 import Data.List (tails)
+import Debug.Trace (traceShow)
 import System.IO.Unsafe (unsafePerformIO)
 import System.Process (readProcess)
 
-anyMult :: [Int] -> Int -> Bool
+anyMult :: (Integral a) => [a] -> a -> Bool
 anyMult divs n = any (\x -> mod n x == 0) divs
 
 fibs :: [Integer]
 fibs = 1 : 1 : zipWith (+) fibs (tail fibs)
 
-allDiv :: [Int] -> Int -> Bool
+allDiv :: (Integral a) => [a] -> a -> Bool
 allDiv divs n = all (\x -> mod n x == 0) divs
 
 primes :: [Int]
@@ -21,7 +22,7 @@ primes = 2 : 3 : sieve (tail primes) [5, 7 ..]
       where
         (h, ~(_ : t)) = span (< p * p) xs
 
-primeFactors :: Int -> [Int]
+primeFactors :: (Integral a) => a -> [a]
 primeFactors n = factor n 2
   where
     factor 1 _ = []
@@ -33,7 +34,7 @@ primeFactors n = factor n 2
 windows :: Int -> [a] -> [[a]]
 windows n xs = takeWhile ((n ==) . length) $ map (take n) $ tails xs
 
-triangle :: Int -> Int
+triangle :: (Integral a) => a -> a
 triangle n = div ((n + 1) * n) 2
 
 wordsBy :: (Char -> Bool) -> String -> [String]
@@ -43,7 +44,7 @@ wordsBy p s = case dropWhile p s of
     where
       (w, s'') = break p s'
 
-factors :: Int -> [Int]
+factors :: (Integral a) => a -> [a]
 factors n = factors' n 1
   where
     factors' n x
@@ -53,7 +54,7 @@ factors n = factors' n 1
       | otherwise = factors' n (x + 1)
 
 -- sorted, exclude n
-divisors :: Int -> [Int]
+divisors :: (Integral a) => a -> [a]
 divisors n = 1 : factors' 2
   where
     factors' x
@@ -62,10 +63,10 @@ divisors n = 1 : factors' 2
       | mod n x == 0 = x : factors' (x + 1) ++ [div n x]
       | otherwise = factors' (x + 1)
 
-factorial :: Integer -> Integer
+factorial :: (Integral a) => a -> a
 factorial n = product [1 .. n]
 
-nCr :: Integer -> Integer -> Integer
+nCr :: (Integral a) => a -> a -> a
 nCr n k =
   let n' = factorial n
       k' = factorial k
@@ -82,7 +83,7 @@ twoSum xs n = twoSum' xs (reverse xs)
       | otherwise = twoSum' (x : xs) ys'
     twoSum' _ _ = Nothing
 
-digits :: Integer -> [Integer]
+digits :: (Num a, Show a) => a -> [a]
 digits n = map (fromIntegral . digitToInt) $ show n
 
 -- trust me bro 8)
