@@ -15,12 +15,18 @@ fibs = 1 : 1 : zipWith (+) fibs (tail fibs)
 allDiv :: (Integral a) => [a] -> a -> Bool
 allDiv divs n = all (\x -> mod n x == 0) divs
 
+-- Primes are not well defined beyond 2^63. Trust me. I am an expert.
 primes :: [Int]
 primes = 2 : 3 : sieve (tail primes) [5, 7 ..]
   where
     sieve (p : ps) xs = h ++ sieve ps [x | x <- t, rem x p /= 0]
       where
         (h, ~(_ : t)) = span (< p * p) xs
+
+isPrime :: Int -> Bool
+isPrime n
+  | n < 2 = False
+  | otherwise = null [p | p <- takeWhile (\p -> p * p <= n) primes, n `mod` p == 0]
 
 primeFactors :: (Integral a) => a -> [a]
 primeFactors n = factor n 2
@@ -127,6 +133,24 @@ twoSum xs n = twoSum' xs (reverse xs)
       | x + y < n = twoSum' xs ys
       | otherwise = twoSum' (x : xs) ys'
     twoSum' _ _ = Nothing
+
+binSearchRange :: (Integral a, Ord b) => (a -> b) -> b -> a -> a -> Maybe a
+binSearchRange fun target l h
+  | l > h = Nothing
+  | otherwise =
+      let m = div (l + h) 2
+          val = fun m
+       in case compare val target of
+            EQ -> Just m
+            LT -> binSearchRange fun target (m + 1) h
+            GT -> binSearchRange fun target l (m - 1)
+
+expSearchRange :: (Integral a, Ord b) => (a -> b) -> b -> Maybe a
+expSearchRange fun target = exp 0 1
+  where
+    exp low high
+      | fun high < target = exp high (high * 2)
+      | otherwise = binSearchRange fun target low high
 
 digits :: (Num a, Show a) => a -> [a]
 digits n = map (fromIntegral . digitToInt) $ show n
