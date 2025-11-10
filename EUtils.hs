@@ -1,7 +1,7 @@
 module EUtils where
 
 import Data.Char (digitToInt)
-import Data.List (foldl', tails)
+import Data.List (foldl', sort, tails)
 import Debug.Trace (traceShow)
 import System.IO.Unsafe (unsafePerformIO)
 import System.Process (readProcess)
@@ -123,6 +123,16 @@ nCr n k =
       k' = factorial k
       nsubk' = factorial (n - k)
    in div n' (k' * nsubk')
+
+numPartition :: (Num a, Ord a) => a -> [a] -> [[a]]
+numPartition target restricts = numPartition' target (sort restricts) []
+  where
+    numPartition' :: (Num a, Ord a) => a -> [a] -> [a] -> [[a]]
+    numPartition' target rs@(~(r : rs')) acc
+      | target <= 0 || null rs = [acc | target == 0]
+      | otherwise =
+          numPartition' (target - r) rs (r : acc)
+            ++ numPartition' target rs' acc
 
 twoSum :: [Int] -> Int -> Maybe (Int, Int)
 twoSum xs n = twoSum' xs (reverse xs)
