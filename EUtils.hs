@@ -165,6 +165,26 @@ expSearchRange fun target = exp 0 1
 digits :: (Num a, Show a) => a -> [a]
 digits n = map (fromIntegral . digitToInt) $ show n
 
+msdigit :: (Num a, Show a) => a -> a
+msdigit n = fromIntegral $ digitToInt $ head $ show n
+
+lsdigit :: (Num a, Show a) => a -> a
+lsdigit n = fromIntegral $ digitToInt $ last $ show n
+
+rdshift :: (Integral a, Show a, Read a) => a -> a -> a
+rdshift s n =
+  let num = show n
+      len = length num
+      rot = fromIntegral $ mod s $ fromIntegral len
+   in read $ drop (len - rot) num ++ take (len - rot) num
+
+ldshift :: (Integral a, Show a, Read a) => a -> a -> a
+ldshift s n =
+  let num = show n
+      len = length num
+      rot = fromIntegral $ mod s $ fromIntegral len
+   in read $ drop rot num ++ take rot num
+
 -- trust me bro 8)
 curl :: String -> String
 curl url = unsafePerformIO $ readProcess "curl" ["-f", "-sS", "-L", url] ""
