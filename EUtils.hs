@@ -185,6 +185,12 @@ ldshift s n =
       rot = fromIntegral $ mod s $ fromIntegral len
    in read $ drop rot num ++ take rot num
 
+tdright :: (Integral a) => a -> a -> a
+tdright s n = div n (10 ^ s)
+
+tdleft :: (Integral a, Show a, Read a) => Int -> a -> a
+tdleft s n = read $ drop s $ show n
+
 -- trust me bro 8)
 curl :: String -> String
 curl url = unsafePerformIO $ readProcess "curl" ["-f", "-sS", "-L", url] ""
