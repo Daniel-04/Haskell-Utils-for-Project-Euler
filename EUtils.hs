@@ -1,7 +1,8 @@
 module EUtils where
 
 import Data.Char (digitToInt)
-import Data.List (foldl', sort, tails)
+import Data.List (foldl', group, sort, tails)
+import Data.Ratio
 import Debug.Trace (traceShow)
 import System.IO.Unsafe (unsafePerformIO)
 import System.Process (readProcess)
@@ -37,8 +38,22 @@ primeFactors n = factor n 2
       | f * f > n = [n]
       | otherwise = factor n (f + 1)
 
+primeFactorsExp :: (Integral a) => a -> [(a, Int)]
+primeFactorsExp n = map (\g -> (head g, length g)) . group $ primeFactors n
+
+coprimes :: (Integral a) => a -> [a]
+coprimes a = filter (\x -> notElem 0 $ map (mod x) $ primeFactors a) [1 .. a]
+
+slice :: Int -> Int -> [a] -> [a]
+slice s e as = take (e - s + 1) $ drop (s - 1) as
+
 windows :: Int -> [a] -> [[a]]
 windows n xs = takeWhile ((n ==) . length) $ map (take n) $ tails xs
+
+combinations :: Int -> [a] -> [[a]]
+combinations 0 _ = [[]]
+combinations _ [] = []
+combinations n (a : as) = map (a :) (combinations (n - 1) as) ++ combinations n as
 
 diagonalsTLBR :: [[a]] -> [[a]]
 diagonalsTLBR xss =
@@ -116,6 +131,22 @@ divisors n = 1 : factors' 2
 
 factorial :: (Integral a) => a -> a
 factorial n = product [1 .. n]
+
+isPerfectSquare :: (Integral a) => a -> Bool
+isPerfectSquare n = all (even . snd) $ primeFactorsExp n
+
+sqrtIter :: Int -> Int -> Rational
+sqrtIter i n = sqrtIter' i n (fromIntegral n % 2)
+  where
+    sqrtIter' 0 _ r = r
+    sqrtIter' i n r = sqrtIter' (i - 1) n ((r + fromIntegral n / r) / 2)
+
+nthDecimal :: Rational -> Integer -> Integer
+nthDecimal x n =
+  let p = numerator x
+      q = denominator x
+      r = p `mod` q
+   in (r * (10 ^ n) `div` q) `mod` 10
 
 nCr :: (Integral a) => a -> a -> a
 nCr n k =
