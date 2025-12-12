@@ -44,6 +44,20 @@ primeFactorsExp n = map (\g -> (head g, length g)) . group $ primeFactors n
 coprimes :: (Integral a) => a -> [a]
 coprimes a = filter (\x -> notElem 0 $ map (mod x) $ primeFactors a) [1 .. a]
 
+findCycle :: (Eq a) => [a] -> Maybe a
+findCycle xs = do
+  meeting <- tortoiseHare xs xs
+  findStart xs meeting
+  where
+    tortoiseHare (t : ts) (_ : h1 : h2 : hs)
+      | t == h1 = Just ts
+      | otherwise = tortoiseHare ts (h2 : hs)
+    tortoiseHare _ _ = Nothing
+    findStart (t : ts) (h : hs)
+      | t == h = Just t
+      | otherwise = findStart ts hs
+    findStart _ _ = Nothing
+
 slice :: Int -> Int -> [a] -> [a]
 slice s e as = take (e - s + 1) $ drop (s - 1) as
 
