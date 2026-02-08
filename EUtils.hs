@@ -27,7 +27,27 @@ primes = 2 : 3 : sieve (tail primes) [5, 7 ..]
 isPrime :: Int -> Bool
 isPrime n
   | n < 2 = False
-  | otherwise = null [p | p <- takeWhile (\p -> p * p <= n) primes, n `mod` p == 0]
+  | otherwise = null [p | p <- takeWhile (\p -> p * p <= n) primes, mod n p == 0]
+
+-- smallest prime factor
+spf :: Int -> Int
+spf n
+  | n < 2 = n
+  | otherwise = case [p | p <- takeWhile (\p -> p * p <= n) primes, mod n p == 0] of
+      (p : _) -> p
+      [] -> n
+
+phi :: Int -> Int
+phi 1 = 1
+phi n =
+  let p = spf n
+      m = div n p
+   in if mod m p == 0
+        then p * phi m
+        else (p - 1) * phi m
+
+totients :: [Int]
+totients = map phi [1 ..]
 
 primeFactors :: (Integral a) => a -> [a]
 primeFactors n = factor n 2
@@ -43,6 +63,9 @@ primeFactorsExp n = map (\g -> (head g, length g)) . group $ primeFactors n
 
 coprimes :: (Integral a) => a -> [a]
 coprimes a = filter (\x -> notElem 0 $ map (mod x) $ primeFactors a) [1 .. a]
+
+properFractions :: (Integral a) => a -> [Rational]
+properFractions n = map ((/ fromIntegral n) . fromIntegral) $ coprimes n
 
 findCycle :: (Eq a) => [a] -> Maybe a
 findCycle xs = do
