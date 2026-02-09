@@ -64,8 +64,21 @@ primeFactorsExp n = map (\g -> (head g, length g)) . group $ primeFactors n
 coprimes :: (Integral a) => a -> [a]
 coprimes a = filter (\x -> notElem 0 $ map (mod x) $ primeFactors a) [1 .. a]
 
-properFractions :: (Integral a) => a -> [Rational]
-properFractions n = map ((/ fromIntegral n) . fromIntegral) $ coprimes n
+properFractions :: (Integral a) => a -> [Ratio a]
+properFractions n = map (% n) $ coprimes n
+
+fareySequence :: (Integral a) => a -> [Ratio a]
+fareySequence n = fareySequence' n (0 % 1) (1 % n)
+  where
+    fareySequence' n prev curr
+      | numerator curr <= n =
+          let a = numerator prev
+              b = denominator prev
+              c = numerator curr
+              d = denominator curr
+              k = div (n + b) d
+           in prev : fareySequence' n curr ((k * c - a) % (k * d - b))
+      | otherwise = []
 
 findCycle :: (Eq a) => [a] -> Maybe a
 findCycle xs = do
