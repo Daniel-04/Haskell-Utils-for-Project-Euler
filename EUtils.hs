@@ -80,6 +80,18 @@ fareySequence n = fareySequence' n (0 % 1) (1 % n)
            in prev : fareySequence' n curr ((k * c - a) % (k * d - b))
       | otherwise = []
 
+champernowne :: Int -> Int
+champernowne n = champernowne' n 1
+  where
+    champernowne' n k
+      | n > count = champernowne' (n - count) (k + 1)
+      | otherwise = digits num !! digitIndex
+      where
+        count = 9 * 10 ^ (k - 1) * k
+        numberIndex = (n - 1) `div` k
+        digitIndex = (n - 1) `mod` k
+        num = 10 ^ (k - 1) + numberIndex
+
 findCycle :: (Eq a) => [a] -> Maybe a
 findCycle xs = do
   meeting <- tortoiseHare xs xs
