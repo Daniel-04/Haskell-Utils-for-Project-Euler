@@ -1,7 +1,7 @@
 module EUtils where
 
 import Data.Char (digitToInt)
-import Data.List (foldl', group, sort, tails)
+import Data.List (foldl', group, isPrefixOf, sort, tails)
 import Data.Ratio
 import Debug.Trace (traceShow)
 import System.IO.Unsafe (unsafePerformIO)
@@ -149,6 +149,41 @@ numToWords n
   where
     units = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"]
     tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"]
+
+romans :: [(Int, String)]
+romans =
+  [ (1000, "M"),
+    (900, "CM"),
+    (500, "D"),
+    (400, "CD"),
+    (100, "C"),
+    (90, "XC"),
+    (50, "L"),
+    (40, "XL"),
+    (10, "X"),
+    (9, "IX"),
+    (5, "V"),
+    (4, "IV"),
+    (1, "I")
+  ]
+
+toRoman :: Int -> String
+toRoman n = toRoman' n romans
+  where
+    toRoman' 0 _ = ""
+    toRoman' n ((v, s) : xs)
+      | n >= v = s ++ toRoman' (n - v) ((v, s) : xs)
+      | otherwise = toRoman' n xs
+
+fromRoman :: String -> Int
+fromRoman "" = 0
+fromRoman str = parse str romans
+  where
+    parse "" _ = 0
+    parse s ((v, sym) : xs)
+      | sym `isPrefixOf` s = v + parse (drop (length sym) s) romans
+      | otherwise = parse s xs
+    parse _ [] = error "Invalid Roman numeral"
 
 countBy :: (Integral b) => (a -> Bool) -> [a] -> b
 countBy p = foldl' (\acc a -> if p a then acc + 1 else acc) 0
