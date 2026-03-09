@@ -117,6 +117,18 @@ combinations 0 _ = [[]]
 combinations _ [] = []
 combinations n (a : as) = map (a :) (combinations (n - 1) as) ++ combinations n as
 
+rperms :: Int -> [a] -> [[a]]
+rperms 0 _ = [[]]
+rperms _ [] = []
+rperms r xs =
+  [ y : zs
+    | (y, ys) <- select xs,
+      zs <- rperms (r - 1) ys
+  ]
+  where
+    select [] = []
+    select (x : xs) = (x, xs) : [(y, x : ys) | (y, ys) <- select xs]
+
 diagonalsTLBR :: [[a]] -> [[a]]
 diagonalsTLBR xss =
   [ [ xss !! i !! j
